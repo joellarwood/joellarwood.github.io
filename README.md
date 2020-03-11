@@ -1,1 +1,1 @@
-joellarwood.github.io
+Personal website files to be built via Hugo and deployed on netlify. 
