@@ -42,7 +42,7 @@ params:
   description: 
   googleAnalyticsAsync: yes
   mainSection: posts
-  postsOnHomePage: 5
+  showAllPostsOnHomePage: true
   projectsUrl: https://github.com/joellarwood
   rss: yes
   show_updated: yes
