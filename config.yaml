@@ -1,0 +1,60 @@
+baseURL: https://joellarwood.com
+languageCode: en-us
+title: Joel Larwood
+theme: hugo-theme-cactus
+copyright: ""
+disqusShortname: example
+menu:
+  main:
+    - name: Home
+      url: /
+      weight: 1
+    - name: Posts
+      url: /posts
+      weight: 3
+  #  - name: Tags
+  #    url: /tags
+  #    weight: 3
+  #  - name: About
+  #    url: /about
+  #    weight: 4
+markup:
+  highlight:
+    codeFences: yes
+    guessSyntax: no
+    hl_Lines: ''
+    lineNoStart: 1
+    lineNos: yes
+    lineNumbersInTable: no
+    noClasses: yes
+    style: dracula
+    tabWidth: 4
+  tableOfContents:
+    endLevel: 4
+    ordered: no
+    startLevel: 2
+params:
+  colortheme: white
+  comments:
+    enabled: no
+    engine: disqus
+  dateFormat: '2006-01-02'
+  description: 
+  googleAnalyticsAsync: yes
+  mainSection: posts
+  postsOnHomePage: 5
+  projectsUrl: https://github.com/joellarwood
+  rss: yes
+  show_updated: yes
+  showAllPostsArchive: no
+  showAllPostsOnHomePage: yes
+  showProjectsList: yes
+  showReadTime: yes
+  social:
+    - link: https://github.com/joellarwood
+      name: github
+  #  - link: https://www.linkedin.com/company/github/
+  #    name: linkedin
+  #  - link: example@example.com
+  #    name: email
+  tagsOverview: no
