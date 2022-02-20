@@ -1,0 +1,121 @@
+---
+title: "Raster Class Changes by Zone"
+description: |
+  Creating classification change matrices between two stacked rasters from zones defined in a third raster.  
+# author:
+#   - name: Joel Larwood
+#     url: https://joellarwood.com
+date: 2022-02-19
+output:
+  distill::distill_article:
+    self_contained: false
+draft: true
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE) 
+```
+
+```{r loadPkgs}
+library(terra) # Spatial Data Analysis
+library(purrr) # Functional Programming Tools
+library(ggplot2) # Create Elegant Data Visualisations Using the Grammar of Graphics 
+library(dplyr) # A Grammar of Data Manipulation
+library(furrr) # Apply Mapping Functions in Parallel using Futures
+```
+
+# Set up rasters 
+
+Rather than work with real data we can set up a simple 10 x 10 raster and assign classifications to each pixel. 
+From the starting point of the empty raster we will create the three rasters that we are going to be working with. 
+One raster will be used to represent the geographic zone. 
+This will be a simple split where the first 65 cells of the raster are zone `1` and the last 35 are zone `2`
+The remaining two rasters will represent the classification of the pixel on the variable we want to cross tabulate for `year1` and `year2`. 
+We will define four levels of our categorical classification randomly assigned to the raster in `year1` with the values in `year2` being the values in `year2` with 20 cells randomly reclassified. 
+
+```{r}
+#Create empty raster
+r <- terra::rast(ncol = 10, 
+                 nrow = 10,
+                 xmin = -50,
+                 xmax = 50, 
+                 ymin = -50, 
+                 ymax = 50)
+
+#Create zone raster 
+zone <- r
+terra::values(zone) <- c(rep_len(1, 65),
+                      rep_len(2, 35))
+
+#Set value name 
+names(zone) <- "zone"
+
+#Create year1 raster 
+year1 <- r
+
+#Randomly set classification values 
+terra::values(year1) <- sample(c(1:4),
+                               size = ncell(year1),
+                               replace = TRUE,
+                               prob = c(40, 10, 30, 20))
+#Set value name 
+names(year1) <- "year1_class"
+
+#Create year 2 raster 
+year2 <- year1 
+
+#Randomly replace 20 values 
+year2_values <- as.vector(terra::values(year1))
+year2_values[sample(1:length(year2_values), 20)] <- sample(c(1:4),
+                                                           size = 20,
+                                                           replace = TRUE,
+                                                           prob = c(40, 10, 30, 20))
+
+#update raster values for year 2 reflecting reclassifications 
+values(year2) <- year2_values
+
+#Set value name 
+names(year2) <- "year2_class"
+```
+
+
+```{r}
+terra::merge(year1, year2)
+```
+
+
+
+We can now create a `raster stack` to interact with the three raster layers we have created as a single object. 
+
+
+By plotting the data we can see we have successfully allocated as classification to each cell and that there is change from `year1` to `year2`
+
+```{r, fig.width=50%}
+
+
+
+ggplot() +
+  geom_raster(
+    data = as.data.frame(year1, xy = T),
+    aes(x = x, y = y, fill = as.factor(year1_class))) +
+  coord_quickmap() +
+  theme_classic() +
+  ylab("") +
+  xlab("") +
+  theme(legend.title = element_blank())
+
+ggplot() +
+  geom_raster(
+    data = as.data.frame(year2, xy = T),
+    aes(x = x, y = y, fill = as.factor(year2_class))) +
+  coord_quickmap() +
+  theme_classic() +
+  ylab("") +
+  xlab("") +
+  theme(legend.title = element_blank())
+```
+
+
