@@ -1,11 +1,11 @@
 ---
 title: "Raster Class Changes by Zone"
 description: |
-  Creating classification change matrices between two stacked rasters from zones defined in a third raster.  
-# author:
-#   - name: Joel Larwood
-#     url: https://joellarwood.com
-date: 2022-02-19
+  Creating classification change matrices between two rasters from zones defined in a third raster.  
+author:
+  - name: Joel Larwood
+#    url: https://example.com/
+date: "`r format(Sys.time(), '%Y-%m-%d')`"
 output:
   distill::distill_article:
     self_contained: false
@@ -16,15 +16,20 @@ draft: true
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE,
-                      message = FALSE) 
+                      message = FALSE,
+                      out.width = "110%") 
 ```
 
 ```{r loadPkgs}
 library(terra) # Spatial Data Analysis
-library(purrr) # Functional Programming Tools
 library(ggplot2) # Create Elegant Data Visualisations Using the Grammar of Graphics 
+```
+
+```{r echo = FALSE}
+library(patchwork) #helpful with plots but not needed in analysis code
+library(ggpattern) # 'ggplot2' Pattern Geoms
 library(dplyr) # A Grammar of Data Manipulation
-library(furrr) # Apply Mapping Functions in Parallel using Futures
+
 ```
 
 # Set up rasters 
@@ -48,11 +53,27 @@ r <- terra::rast(ncol = 10,
 #Create zone raster 
 zone <- r
 terra::values(zone) <- c(rep_len(1, 65),
-                      rep_len(2, 35))
+                         rep_len(2, 35))
 
 #Set value name 
 names(zone) <- "zone"
+```
 
+```{r echo = FALSE}
+ggplot() +
+  geom_raster(
+    data = as.data.frame(zone, xy = T),
+    aes(x = x, y = y, fill = as.factor(zone))) +
+  coord_quickmap() +
+  theme_classic() +
+  labs(x = "",
+         y = "",
+         fill = "",
+         title = "Raster containing zone information")
+
+```
+
+```{r}
 #Create year1 raster 
 year1 <- r
 
@@ -82,40 +103,211 @@ names(year2) <- "year2_class"
 ```
 
 
-```{r}
-terra::merge(year1, year2)
-```
+```{r echo = FALSE}
 
-
-
-We can now create a `raster stack` to interact with the three raster layers we have created as a single object. 
-
-
-By plotting the data we can see we have successfully allocated as classification to each cell and that there is change from `year1` to `year2`
-
-```{r, fig.width=50%}
-
-
-
-ggplot() +
+y1_p <- ggplot() +
   geom_raster(
     data = as.data.frame(year1, xy = T),
     aes(x = x, y = y, fill = as.factor(year1_class))) +
   coord_quickmap() +
   theme_classic() +
-  ylab("") +
-  xlab("") +
-  theme(legend.title = element_blank())
+  labs(x = "",
+       y = "",
+       fill = "",
+       title = "Year 1")
 
-ggplot() +
+y2_p <-ggplot() +
   geom_raster(
     data = as.data.frame(year2, xy = T),
     aes(x = x, y = y, fill = as.factor(year2_class))) +
   coord_quickmap() +
   theme_classic() +
-  ylab("") +
-  xlab("") +
-  theme(legend.title = element_blank())
+  labs(x = "",
+       y = "",
+       fill = "",
+       title = "Year 2")
+
+y1_p + y2_p + patchwork::plot_layout(guides = "collect")
 ```
+
+We can also plot the zone over the top of each year to illustrate how the zone layer sits on the class layers
+
+```{r echo = FALSE}
+y1_p_z <- ggplot(data = as.data.frame(c(year1, zone), xy = T),
+                 aes(x = x, 
+                     y = y,
+                     fill = as.factor(year1_class),
+                     pattern = as.factor(zone)
+                 )) +
+    geom_tile_pattern(pattern_color = NA,
+                      pattern_fill = NA,
+                      pattern_angle = 45,
+                      pattern_density = 0.5,
+                      pattern_spacing = 0.025,
+                      pattern_alpha = .5,
+                      pattern_key_scale_factor = 1) +
+  scale_pattern_manual(values = c("1" = "stripe", "2" = "none")) +
+  scale_pattern_density_manual(c(.1, .7)) + 
+  coord_quickmap() +
+  theme_classic() +
+  labs(x = "",
+       y = "",
+       fill = "Class",
+       pattern = "Zone",
+       title = "Year 1")
+
+y2_p_z <- ggplot(data = as.data.frame(c(year2, zone), xy = T),
+                 aes(x = x, 
+                     y = y,
+                     fill = as.factor(year2_class),
+                     pattern = as.factor(zone)
+                 )) +
+    geom_tile_pattern(pattern_color = NA,
+                      pattern_fill = NA,
+                      pattern_angle = 45,
+                      pattern_density = 0.5,
+                      pattern_spacing = 0.025,
+                      pattern_alpha = .5,
+                      pattern_key_scale_factor = 1) +
+  scale_pattern_manual(values = c("1" = "stripe", "2" = "none")) +
+  scale_pattern_density_manual(c(.1, .7)) + 
+  coord_quickmap() +
+  theme_classic() +
+  labs(x = "",
+       y = "",
+       fill = "Class",
+       pattern = "Zone",
+       title = "Year 2")
+
+y1_p_z + y2_p_z + patchwork::plot_layout(guides = "collect")
+```
+
+# Getting classification counts for each year
+
+We are able to obtain the simple count of classes for each year raster by using the `freq` function. 
+We can see the class designation in the `value` column and can see that the sum of the counts is 100 (the number of cells in our raster).
+
+```{r}
+freq(year1)
+```
+
+```{r}
+sum(freq(year1)[c(1:4), 3])
+```
+
+This can also be done on a `RasterStack` which is created by combining rasters using `c()`
+
+```{r}
+freq(c(year1, year2))
+```
+
+Again we can see that for each layer (layer = 1 is `year1` and layer = 2 is `year2` as defined by the order we stacked the rasters) that the count of cells is 100 
+
+```{r}
+freq(c(year1, year2)) %>% 
+  as.data.frame() %>% 
+  group_by(layer) %>% 
+  summarise(
+    sum = sum(count)
+  )
+```
+
+We can extend this to zonal statistics by creating a `RasterStack` that contains `year1` and `zone` and using `terra::crosstab` to get the count of each class in the zone.
+
+```{r}
+terra::crosstab(c(year1, zone))
+```
+
+
+# Creating Classification Change Matrix 
+
+We have two rasters representing two years with varying cell classifications and we may be interested in claculating the change from one class to another. 
+Ignoring the zone raster we can create a simple classification change matrix by combining the `year1` and `year2` rasters into a single `RasterStack` and passing this to `terra::crosstab`. This returns a matrix showing the count of cells that have moved from a given class in year 1 (rows) to a given class in year 2 (cols)
+
+```{r}
+y1_y2 <- terra::crosstab(c(year1, year2))
+
+y1_y2
+```
+Note that the sum of the matrix is equal to 100 as we are couting the number of cells that have moved from a given class in `year1` to a given class in `year2` rather than the count of cells in a class in `year1` and the count of cells in a class in `year2`
+
+```{r results = TRUE}
+sum(y1_y2)
+```
+
+We can extend this approach to account for our third raster which provides the zone each cell falls within by adding the `zone` raster as the third layer in a `RasterStack` which will return a `year1` x `year2` classification change matrix for each level of `zone`
+
+```{r}
+y1_y2_zone <- terra::crosstab(c(year1, year2, zone))
+
+y1_y2_zone
+```
+
+Note that now the sum of each `year1` x `year2` matrix is the number of cells in the given `zone` but that the two values sum to 100. 
+
+```{r results = TRUE, echo = FALSE}
+sapply(c(zone_1 = 1, 
+         zone_2 = 2),
+       function(x){
+         sum(y1_y2_zone[c(1:4), c(1:4), x])
+       })
+```
+
+It is also possible to return the results of the cross tabulation of classes as a dataframe by setting `long = TRUE` 
+
+```{r results = FALSE}
+terra::crosstab(c(year1, year2, zone),
+                long = TRUE)
+```
+
+```{r results = TRUE, echo=FALSE}
+terra::crosstab(c(year1, year2, zone),
+                long = TRUE) %>% 
+  arrange(zone, year1_class, year2_class) 
+```
+
+This data can be used to calculate zonal classification counts by year by turning the data into a tidy dataframe by pivoting the table longer adding a column to indicate the year and a column indicating class.
+
+```{r}
+tidy_dat <- terra::crosstab(c(year1, year2, zone),
+                long = TRUE) %>% 
+  #pivot longer to create tidy data with only a single observation per row 
+  tidyr::pivot_longer(cols = matches("_class$"),
+                      names_to = "year",
+                      values_to = "class") %>% 
+  #remove "_class" from the values in the year column
+  dplyr::mutate(
+    year = stringr::str_remove(year, 
+                               "_class")
+  )
+
+tidy_dat
+```
+
+From here we can group by `year`, `zone`, and `class` and sum the frequencies to get the count of the cells belonging to a given class in a give year
+
+```{r}
+tidy_dat %>% 
+  group_by(year, zone, class) %>% 
+  summarise(
+    count = sum(Freq)
+  )
+```
+This is the same as taking the matrix for each zone and summing the rows or columns, where summing the rows will give the counts by class for `year1` and summing the columns will give the counts by class for `year2`
+
+```{r}
+
+#Get rows (year1) 1 to 4, columns (year2) 1 to 4, and the first layer (zone) 
+y1_y2_zone1 <- y1_y2_zone[c(1:4), c(1:4), 1]
+
+y1_y2_zone1
+
+#Year 1 class counts 
+rowSums(y1_y2_zone1)
+
+#Year 2 class counts 
+colSums(y1_y2_zone1)
+```
+
 
 
