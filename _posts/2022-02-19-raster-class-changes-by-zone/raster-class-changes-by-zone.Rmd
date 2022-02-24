@@ -18,17 +18,20 @@ knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE,
                       message = FALSE,
                       out.width = "110%") 
+
 ```
+
 
 ```{r loadPkgs}
 library(terra) # Spatial Data Analysis
-library(ggplot2) # Create Elegant Data Visualisations Using the Grammar of Graphics 
+library(dplyr) # A Grammar of Data Manipulation
+library(tidyr) # Tidy Messy Data
 ```
 
 ```{r echo = FALSE}
 library(patchwork) #helpful with plots but not needed in analysis code
 library(ggpattern) # 'ggplot2' Pattern Geoms
-library(dplyr) # A Grammar of Data Manipulation
+library(ggplot2) # Create Elegant Data Visualisations Using the Grammar of Graphics 
 
 ```
 
@@ -59,7 +62,7 @@ terra::values(zone) <- c(rep_len(1, 65),
 names(zone) <- "zone"
 ```
 
-```{r echo = FALSE}
+```{r echo = FALSE, fig.cap="Zone layer"}
 ggplot() +
   geom_raster(
     data = as.data.frame(zone, xy = T),
@@ -103,7 +106,7 @@ names(year2) <- "year2_class"
 ```
 
 
-```{r echo = FALSE}
+```{r echo = FALSE, fig.cap = "Classes in Year 1 and Year 2"}
 
 y1_p <- ggplot() +
   geom_raster(
@@ -132,7 +135,7 @@ y1_p + y2_p + patchwork::plot_layout(guides = "collect")
 
 We can also plot the zone over the top of each year to illustrate how the zone layer sits on the class layers
 
-```{r echo = FALSE}
+```{r echo = FALSE, fig.cap = "Classes in Year 1 and Year 2 with zone overlay"}
 y1_p_z <- ggplot(data = as.data.frame(c(year1, zone), xy = T),
                  aes(x = x, 
                      y = y,
@@ -235,6 +238,45 @@ Note that the sum of the matrix is equal to 100 as we are couting the number of 
 sum(y1_y2)
 ```
 
+This plot illistrates the specific values that have changed class. 
+
+```{r echo = FALSE, fig.cap="Cells that changed values. Gray inidicates cell class did not change"}
+as.data.frame(c(year1, year2), xy = T) %>% 
+  #logical indicating if values change from year1 to year2 
+  mutate(class_change = year1_class != year2_class) %>% 
+  tidyr::pivot_longer(
+    cols = matches("_class"),
+    names_to = "year",
+    values_to = "class"
+  ) %>% 
+  mutate(
+    year = stringr::str_remove(year, "_class"),
+    class = if_else(class_change == TRUE,
+                    as.character(class), 
+                    "No Change")
+  ) %>% 
+#  filter(class_change == TRUE) %>% 
+  ggplot(aes(x = x,
+             y = y,
+             fill = as.factor(class))) +
+  geom_raster() +
+  lims(x = c(-50, 50),
+       y = c(-50, 50)) + 
+  facet_wrap(~year, nrow = 1) +
+  scale_fill_manual(values = c("1" = "#F8766D",
+                               "2" = "#7CAE00",
+                               "3" = "#00BFC4",
+                               "4" = "#C77CFF",
+                               "No Change" = "gray")) +
+  coord_quickmap() +
+  theme_classic() +
+  labs(x = "",
+       y = "",
+       fill = "")
+
+```
+
+
 We can extend this approach to account for our third raster which provides the zone each cell falls within by adding the `zone` raster as the third layer in a `RasterStack` which will return a `year1` x `year2` classification change matrix for each level of `zone`
 
 ```{r}
@@ -308,6 +350,15 @@ rowSums(y1_y2_zone1)
 #Year 2 class counts 
 colSums(y1_y2_zone1)
 ```
+
+
+
+
+
+
+
+
+
 
 
 
