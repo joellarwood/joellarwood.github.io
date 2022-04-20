@@ -6,9 +6,9 @@ author:
   - name: Joel Larwood
 #    url: https://example.com/
 date: "`r format(Sys.time(), '%Y-%m-%d')`"
-output:
+output: 
   distill::distill_article:
-    self_contained: false
+    self_contained: FALSE
 draft: true
 ---
 
@@ -42,7 +42,7 @@ From the starting point of the empty raster we will create the three rasters tha
 One raster will be used to represent the geographic zone. 
 This will be a simple split where the first 65 cells of the raster are zone `1` and the last 35 are zone `2`
 The remaining two rasters will represent the classification of the pixel on the variable we want to cross tabulate for `year1` and `year2`. 
-We will define four levels of our categorical classification randomly assigned to the raster in `year1` with the values in `year2` being the values in `year2` with 20 cells randomly reclassified. 
+`year1` contains four categorical classifications (represented numerically as `1`, `2`, `3`, or `4`) with `year2` being the values in `year1` with 20 cells randomly reclassified. 
 
 ```{r}
 #Create empty raster

@@ -93,8 +93,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--  https://schema.org/Article -->
-  <meta property="article:published" itemprop="datePublished" content="2022-02-24"/>
-  <meta property="article:created" itemprop="dateCreated" content="2022-02-24"/>
+  <meta property="article:published" itemprop="datePublished" content="2022-03-12"/>
+  <meta property="article:created" itemprop="dateCreated" content="2022-03-12"/>
   <meta name="article:author" content="Joel Larwood"/>
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
@@ -112,7 +112,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output","draft"]}},"value":[{"type":"character","attributes":{},"value":["Raster Class Changes by Zone"]},{"type":"character","attributes":{},"value":["Creating classification change matrices between two rasters from zones defined in a third raster.  \n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Joel Larwood"]}]}]},{"type":"character","attributes":{},"value":["2022-02-24"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]},{"type":"logical","attributes":{},"value":[true]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output","draft"]}},"value":[{"type":"character","attributes":{},"value":["Raster Class Changes by Zone"]},{"type":"character","attributes":{},"value":["Creating classification change matrices between two rasters from zones defined in a third raster.  \n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name"]}},"value":[{"type":"character","attributes":{},"value":["Joel Larwood"]}]}]},{"type":"character","attributes":{},"value":["2022-03-12"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[false]}]}]},{"type":"logical","attributes":{},"value":[true]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   
@@ -1459,7 +1459,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Raster Class Changes by Zone","description":"Creating classification change matrices between two rasters from zones defined in a third raster.","authors":[{"author":"Joel Larwood","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2022-02-24T00:00:00.000+10:00","citationText":"Larwood, 2022"}
+{"title":"Raster Class Changes by Zone","description":"Creating classification change matrices between two rasters from zones defined in a third raster.","authors":[{"author":"Joel Larwood","authorURL":"#","affiliation":"&nbsp;","affiliationURL":"#","orcidID":""}],"publishedDate":"2022-03-12T00:00:00.000+10:00","citationText":"Larwood, 2022"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1478,7 +1478,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <div class="d-byline">
   Joel Larwood  
   
-<br/>2022-02-24
+<br/>2022-03-12
 </div>
 
 <div class="d-article">
@@ -1579,10 +1579,10 @@ Figure 3: Classes in Year 1 and Year 2 with zone overlay
 </code></pre>
 </div>
 <pre><code>     layer value count
-[1,]     1     1    45
+[1,]     1     1    43
 [2,]     1     2    12
-[3,]     1     3    33
-[4,]     1     4    10</code></pre>
+[3,]     1     3    31
+[4,]     1     4    14</code></pre>
 </div>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -1598,13 +1598,13 @@ Figure 3: Classes in Year 1 and Year 2 with zone overlay
 </code></pre>
 </div>
 <pre><code>     layer value count
-[1,]     1     1    45
+[1,]     1     1    43
 [2,]     1     2    12
-[3,]     1     3    33
-[4,]     1     4    10
+[3,]     1     3    31
+[4,]     1     4    14
 [5,]     2     1    46
-[6,]     2     2    12
-[7,]     2     3    32
+[6,]     2     2    11
+[7,]     2     3    33
 [8,]     2     4    10</code></pre>
 </div>
 <p>Again we can see that for each layer (layer = 1 is <code>year1</code> and layer = 2 is <code>year2</code> as defined by the order we stacked the rasters) that the count of cells is 100</p>
@@ -1632,10 +1632,10 @@ Figure 3: Classes in Year 1 and Year 2 with zone overlay
 </div>
 <pre><code>           zone
 year1_class  1  2
-          1 28 17
-          2  6  6
-          3 22 11
-          4  9  1</code></pre>
+          1 28 15
+          2  7  5
+          3 19 12
+          4 11  3</code></pre>
 </div>
 <h1 id="creating-classification-change-matrix">Creating Classification Change Matrix</h1>
 <p>We have two rasters representing two years with varying cell classifications and we may be interested in claculating the change from one class to another. Ignoring the zone raster we can create a simple classification change matrix by combining the <code>year1</code> and <code>year2</code> rasters into a single <code>RasterStack</code> and passing this to <code>terra::crosstab</code>. This returns a matrix showing the count of cells that have moved from a given class in year 1 (rows) to a given class in year 2 (cols)</p>
@@ -1648,10 +1648,10 @@ year1_class  1  2
 </div>
 <pre><code>           year2_class
 year1_class  1  2  3  4
-          1 38  2  4  1
-          2  3  9  0  0
-          3  4  1 28  0
-          4  1  0  0  9</code></pre>
+          1 40  1  1  1
+          2  2 10  0  0
+          3  2  0 29  0
+          4  2  0  3  9</code></pre>
 </div>
 <p>Note that the sum of the matrix is equal to 100 as we are couting the number of cells that have moved from a given class in <code>year1</code> to a given class in <code>year2</code> rather than the count of cells in a class in <code>year1</code> and the count of cells in a class in <code>year2</code></p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1682,19 +1682,19 @@ Figure 4: Cells that changed values. Gray inidicates cell class did not change
 
            year2_class
 year1_class  1  2  3  4
-          1 23  2  2  1
-          2  1  5  0  0
-          3  2  1 19  0
-          4  1  0  0  8
+          1 26  0  1  1
+          2  1  6  0  0
+          3  2  0 17  0
+          4  1  0  2  8
 
 , , zone = 2
 
            year2_class
 year1_class  1  2  3  4
-          1 15  0  2  0
-          2  2  4  0  0
-          3  2  0  9  0
-          4  0  0  0  1</code></pre>
+          1 14  1  0  0
+          2  1  4  0  0
+          3  0  0 12  0
+          4  1  0  1  1</code></pre>
 </div>
 <p>Note that now the sum of each <code>year1</code> x <code>year2</code> matrix is the number of cells in the given <code>zone</code> but that the two values sum to 100.</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1711,23 +1711,23 @@ year1_class  1  2  3  4
 </div>
 <div class="layout-chunk" data-layout="l-body">
 <pre><code>   year1_class year2_class zone Freq
-1            1           1    1   23
-2            1           2    1    2
-3            1           3    1    2
-4            1           4    1    1
-5            2           1    1    1
-6            2           2    1    5
-7            3           1    1    2
-8            3           2    1    1
-9            3           3    1   19
-10           4           1    1    1
-11           4           4    1    8
-12           1           1    2   15
-13           1           3    2    2
-14           2           1    2    2
-15           2           2    2    4
-16           3           1    2    2
-17           3           3    2    9
+1            1           1    1   26
+2            1           3    1    1
+3            1           4    1    1
+4            2           1    1    1
+5            2           2    1    6
+6            3           1    1    2
+7            3           3    1   17
+8            4           1    1    1
+9            4           3    1    2
+10           4           4    1    8
+11           1           1    2   14
+12           1           2    2    1
+13           2           1    2    1
+14           2           2    2    4
+15           3           3    2   12
+16           4           1    2    1
+17           4           3    2    1
 18           4           4    2    1</code></pre>
 </div>
 <p>This data can be used to calculate zonal classification counts by year by turning the data into a tidy dataframe by pivoting the table longer adding a column to indicate the year and a column indicating class.</p>
@@ -1751,16 +1751,16 @@ year1_class  1  2  3  4
 <pre><code># A tibble: 36 × 4
     zone  Freq year  class
    &lt;dbl&gt; &lt;int&gt; &lt;chr&gt; &lt;dbl&gt;
- 1     1    23 year1     1
- 2     1    23 year2     1
- 3     2    15 year1     1
- 4     2    15 year2     1
- 5     1     2 year1     1
- 6     1     2 year2     2
- 7     1     2 year1     1
- 8     1     2 year2     3
- 9     2     2 year1     1
-10     2     2 year2     3
+ 1     1    26 year1     1
+ 2     1    26 year2     1
+ 3     2    14 year1     1
+ 4     2    14 year2     1
+ 5     2     1 year1     1
+ 6     2     1 year2     2
+ 7     1     1 year1     1
+ 8     1     1 year2     3
+ 9     1     1 year1     1
+10     1     1 year2     4
 # … with 26 more rows</code></pre>
 </div>
 <p>From here we can group by <code>year</code>, <code>zone</code>, and <code>class</code> and sum the frequencies to get the count of the cells belonging to a given class in a give year</p>
@@ -1778,20 +1778,20 @@ year1_class  1  2  3  4
    year   zone class count
    &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;
  1 year1     1     1    28
- 2 year1     1     2     6
- 3 year1     1     3    22
- 4 year1     1     4     9
- 5 year1     2     1    17
- 6 year1     2     2     6
- 7 year1     2     3    11
- 8 year1     2     4     1
- 9 year2     1     1    27
-10 year2     1     2     8
-11 year2     1     3    21
+ 2 year1     1     2     7
+ 3 year1     1     3    19
+ 4 year1     1     4    11
+ 5 year1     2     1    15
+ 6 year1     2     2     5
+ 7 year1     2     3    12
+ 8 year1     2     4     3
+ 9 year2     1     1    30
+10 year2     1     2     6
+11 year2     1     3    20
 12 year2     1     4     9
-13 year2     2     1    19
-14 year2     2     2     4
-15 year2     2     3    11
+13 year2     2     1    16
+14 year2     2     2     5
+15 year2     2     3    13
 16 year2     2     4     1</code></pre>
 </div>
 <p>This is the same as taking the matrix for each zone and summing the rows or columns, where summing the rows will give the counts by class for <code>year1</code> and summing the columns will give the counts by class for <code>year2</code></p>
@@ -1805,24 +1805,24 @@ year1_class  1  2  3  4
 </div>
 <pre><code>           year2_class
 year1_class  1  2  3  4
-          1 23  2  2  1
-          2  1  5  0  0
-          3  2  1 19  0
-          4  1  0  0  8</code></pre>
+          1 26  0  1  1
+          2  1  6  0  0
+          3  2  0 17  0
+          4  1  0  2  8</code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='co'>#Year 1 class counts </span>
 <span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>rowSums</a></span><span class='op'>(</span><span class='va'>y1_y2_zone1</span><span class='op'>)</span>
 </code></pre>
 </div>
 <pre><code> 1  2  3  4 
-28  6 22  9 </code></pre>
+28  7 19 11 </code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span class='co'>#Year 2 class counts </span>
 <span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>colSums</a></span><span class='op'>(</span><span class='va'>y1_y2_zone1</span><span class='op'>)</span>
 </code></pre>
 </div>
 <pre><code> 1  2  3  4 
-27  8 21  9 </code></pre>
+30  6 20  9 </code></pre>
 </div>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
