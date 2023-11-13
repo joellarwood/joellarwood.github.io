@@ -1,9 +1,0 @@
-{
-  "list": [
-    {
-      "name":"trackextract",
-      "url":"https://github.com/joellarwood/trackextract",
-      "desc":"A small R package to create fixed length or gated audio excerpts from a single audio file or folder of audio files"
-    }
-  ]
-} 
